@@ -3,7 +3,7 @@
 This is a simple web-based Doctor Appointment Booking System built using **HTML**, **CSS**, **JavaScript**, and **Firebase Realtime Database**. It allows patients to book appointments and receive a unique token number. A confirmation page is generated with all appointment details.
 
 ## 🔗 Live Demo
-[Click here to view the live website](#) *(Add your hosted link here)*
+[[Click here to view the live website](https://soumyajit005.github.io/Doctor-Appointment-Queue-/)](#) *(Add your hosted link here)*
 
 ---
 
