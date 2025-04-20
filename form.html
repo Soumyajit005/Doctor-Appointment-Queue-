@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doctor Appointment Booking</title>
+  <link rel="icon" type="image/png" href="doctor-logo.png">
+  <link rel="stylesheet" type="text/css" href="styles.css"> <!-- Link to your styles.css -->
+</head>
+<body>
+  <h2>Book Your Appointment</h2>
+  <form id="apptForm">
+    <input type="text" id="name" placeholder="Name" required><br><br>
+    <input type="number" id="age" placeholder="Age" required><br><br>
+    <select id="gender" required>
+      <option value="" disabled selected>Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select><br><br>
+    <input type="text" id="phone" placeholder="Phone Number" required><br><br>
+    <button type="submit">Book Now</button>
+  </form>
+  <h3 id="tokenResult">Your token will appear here</h3>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    // ✅ Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyDnfULVFwmFbdLWbV8yygBoj12MYr1EIWk",
+      authDomain: "appointmentqueue-64344.firebaseapp.com",
+      databaseURL: "https://appointmentqueue-64344-default-rtdb.firebaseio.com",
+      projectId: "appointmentqueue-64344",
+      storageBucket: "appointmentqueue-64344.firebasestorage.app",
+      messagingSenderId: "433701624045",
+      appId: "1:433701624045:web:cfbe2cb94e5d848c1d14e4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+
+    // ✅ Handle form submission
+    document.getElementById("apptForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      // Collect data
+      let name = document.getElementById("name").value;
+      let age = document.getElementById("age").value;
+      let gender = document.getElementById("gender").value;
+      let phone = document.getElementById("phone").value;
+
+      // Get and update token
+      let currentToken = 0;
+      await db.ref("/queue/current").once("value").then((snap) => {
+        currentToken = snap.exists() ? snap.val() : 0;
+      });
+
+      // Check if limit reached
+      if (currentToken >= 9) {
+        alert("Booking closed for today. Please try again tomorrow.");
+        return;
+      }
+
+      let token = currentToken + 1;
+      await db.ref("/queue/current").set(token);
+
+      // Save appointment to Firebase
+      const appointment = { name, age, gender, phone, token, time: new Date().toLocaleString() };
+      db.ref("appointments").push(appointment);
+
+      // Save data to localStorage
+      localStorage.setItem('name', name);
+      localStorage.setItem('age', age);
+      localStorage.setItem('gender', gender);
+      localStorage.setItem('phone', phone);
+      localStorage.setItem('token', token);
+      localStorage.setItem('time', new Date().toLocaleString());
+
+      // Redirect to confirmation page
+      window.location.href = "confirmation.html"; // Redirect to confirmation page
+    });
+  </script>
+</body>
+</html>
